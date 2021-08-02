@@ -1,0 +1,6 @@
+npm install eslint-plugin-testing-library eslint-plugin-jest-dom
+remove eslintConfig from package.json
+create .eslintrc and add standard eslintConfig
+Add .eslintcache and .vscode to .gitignore
+Create .vscode/settings.json and add standard eslintConfig
+test that it work in app.test.js 
