@@ -4,3 +4,23 @@ create .eslintrc and add standard eslintConfig
 Add .eslintcache and .vscode to .gitignore
 Create .vscode/settings.json and add standard eslintConfig
 test that it work in app.test.js 
+
+
+NOTES
+QueryMethods
+                                 command[All]ByQueryType
+Command
+1) get: expect element to be in the DOM
+2) query: expect element not ti be in the DOM
+3) find: expect element to appear async
+
+ALL - When you expect more then  1 matches. the result will be an array.
+
+ByQueryType
+1) Role (Most Preffered)
+2) AltText (Images)
+3) Text (Display Element)
+4) Form Element
+   i) Placeholdertext
+   ii) LabelText
+   iii) DisplayValue 
