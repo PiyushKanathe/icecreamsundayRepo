@@ -1,6 +1,5 @@
 import { screen, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import UserEvent from "@testing-library/user-event";
 import App from "../App";
 
 test("order phases for happy path", async () => {
@@ -50,6 +49,10 @@ test("order phases for happy path", async () => {
   });
   userEvent.click(confirmOrderButton);
 
+  // exxpect loading to show
+  const loading = screen.getByText(/loading/i);
+  expect(loading).toBeInTheDocument();
+
   // confirm order number on confirmation page
   const thankYouHeader = await screen.findByRole("heading", {
     name: /thank you/i,
@@ -58,6 +61,10 @@ test("order phases for happy path", async () => {
 
   const orderNumber = await screen.findByText(/order number/);
   expect(orderNumber).toBeInTheDocument();
+
+  // loading removed when order no arived
+  const notLoading = screen.queryByText(/loading/i);
+  expect(notLoading).not.toBeInTheDocument();
 
   // click "new order" button on confirmation page
   const newOrderButton = screen.getByRole("button", { name: /new order/i });
@@ -71,4 +78,29 @@ test("order phases for happy path", async () => {
   // to we need to await anythhing to avoid test errors
   await screen.findByRole("spinbutton", { name: "Chocolate" });
   await screen.findByRole("checkbox", { name: "Cherries" });
+});
+
+test("toppings header is not in the summary page if no toppings ordered", async () => {
+  // render app
+  render(<App />);
+
+  // add icecream and toppings
+  let chocolateInput = await screen.findByRole("spinbutton", {
+    name: /chocolate/i,
+  });
+
+  userEvent.clear(chocolateInput);
+  userEvent.type(chocolateInput, "2");
+
+  // find and click Order button on order entry
+  let orderButton = screen.getByRole("button", { name: /order sundae/i });
+  userEvent.click(orderButton);
+
+  const scoopsHeading = screen.getByRole("heading", { name: "Scoops: $4.00" });
+  expect(scoopsHeading).toBeInTheDocument();
+
+  const toppingsHeading = screen.queryByRole("heading", {
+    name: "Toppings: $0.00",
+  });
+  expect(toppingsHeading).not.toBeInTheDocument();
 });
