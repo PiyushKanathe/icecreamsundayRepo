@@ -1,14 +1,7 @@
 import { createContext, useContext, useState, useMemo, useEffect } from "react";
 import { pricePerItem } from "../constants";
+import { formatCurrency } from "../utilities";
 
-// format number as currency
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(amount);
-};
 // 1. create a context
 const orderDetails = createContext();
 
@@ -51,7 +44,9 @@ export const OrderDetailsProvider = (props) => {
   useEffect(() => {
     const scoopsSubTotal = calculateSubtotal("scoops", optionCounts);
     const toppingsSubTotal = calculateSubtotal("toppings", optionCounts);
-    const grandTotal = scoopsSubTotal + toppingsSubTotal;
+    const tempScoop = scoopsSubTotal === isNaN() ? 0 : scoopsSubTotal;
+    const tempToppings = toppingsSubTotal === isNaN() ? 0 : toppingsSubTotal;
+    const grandTotal = tempScoop + tempToppings;
     setTotals({
       scoops: formatCurrency(scoopsSubTotal),
       toppings: formatCurrency(toppingsSubTotal),
@@ -72,7 +67,14 @@ export const OrderDetailsProvider = (props) => {
     };
     // getter: value of inernal state {Object}, an object containing option count for scoops and toppings, subtotal and totals
     // setter: updateOptioncount
-    return [{ ...optionCounts, totals }, updateItemCount];
+
+    const resetOrder = () => {
+      setOptionCounts({
+        scoops: new Map(),
+        toppings: new Map(),
+      });
+    };
+    return [{ ...optionCounts, totals }, updateItemCount, resetOrder];
   }, [optionCounts, totals]);
   // it will return the provider from the context we created on step 1
   return <orderDetails.Provider value={value} {...props} />;
